@@ -1,0 +1,20 @@
+/* .game {
+  width: 100px;
+  height: 100px;
+  position: relative;
+  background-color: red;
+} */
+
+/* .test {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  background-color: blue;
+  top: 100px;
+  z-index: 10;
+} */
+
+* {
+  padding: 0;
+  margin: 0;
+}

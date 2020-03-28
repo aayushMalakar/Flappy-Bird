@@ -40,7 +40,3 @@ const Background = function() {
 const background = new Background();
 
 background.init();
-
-setInterval(() => {
-  background.move();
-}, 1000 / 60);

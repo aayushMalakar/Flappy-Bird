@@ -1,151 +1,92 @@
-var Run = function() {
-  that3 = this;
+const flap = new sound('../Assets/audio/wing.wav');
+const hit = new sound('../Assets/audio/hit.wav');
+const die = new sound('../Assets/audio/die.wav');
+const point = new sound('../Assets/audio/point.wav');
+const swoosh = new sound('../Assets/audio/swoosh.wav');
 
-  this.score = 0;
+const score = new Score();
+score.init();
 
-  this.scoreDisplay = null;
+const bird = new Bird(flap, swoosh);
+bird.init();
 
-  //stores pipe object
-  this.pipeCollection = [];
+const pipes = [];
+let pipeCounter = 100;
 
-  // controls the animation in option menu
-  this.startMenuFlag = true;
-
-  //
-  this.pipeCounter = 0;
-
-  //
-  this.startGameflag = false;
-
-  //background control
-  this.landscapeControl = 0;
-  this.baseControl = 0;
-
-  this.init = function() {
-    interval = setInterval(function() {
-      //starts background animation
-      that3.landscapeControl--;
-      that3.baseControl -= 4;
-      that2.landscapeBackground.style.backgroundPositionX =
-        that3.landscapeControl + 'px';
-      that2.baseBackground.style.backgroundPositionX = that3.baseControl + 'px';
-
-      // bird movement and animation
-      that.animationControl++;
-
-      if (that.animationControl == 20) {
-        that.animate();
-      }
-      //
-
-      //only runs on option menu
-      if (that3.startGameflag == false) {
-        if (that3.startMenuFlag == true) {
-          that.gravity++;
-          that.element.style.top = that.gravity + 'px';
-
-          if (that.gravity == 360) {
-            that3.startMenuFlag = false;
-          }
-        } else {
-          that.gravity--;
-          that.element.style.top = that.gravity + 'px';
-
-          if (that.gravity == 340) {
-            that3.startMenuFlag = true;
-          }
-        }
-      }
-      //
-
-      //only runs on start menu
-      if (that3.startGameflag == true) {
-        collision();
-
-        that.rotation += 1.7;
-        that.gravityController++;
-
-        if (that.gravityController == 5) {
-          that.move();
-        }
-
-        if (
-          that3.pipeCounter == 200 ||
-          that3.pipeCounter == 400 ||
-          that3.pipeCounter == 600
-        ) {
-          var pipe = new Pipes();
-
-          pipe.topElementHeight = Math.floor(Math.random() * 300) + 100;
-          pipe.bottomElementHeight = 512 - pipe.topElementHeight - pipe.gap;
-          pipe.bottomElementY = 512 - pipe.bottomElementHeight;
-          pipe.init();
-          that3.pipeCollection.push(pipe);
-        }
-
-        that3.pipeCounter++;
-
-        for (var j = 0; j < that3.pipeCollection.length; j++) {
-          that3.pipeCollection[j].topElementX--;
-          that3.pipeCollection[j].bottomElementX--;
-
-          if (that3.pipeCollection[j].topElementX + 60 <= 0) {
-            that3.pipeCollection[j].topElementX =
-              that3.pipeCollection[j].rePosition;
-            that3.pipeCollection[j].bottomElementX =
-              that3.pipeCollection[j].rePosition;
-
-            that3.pipeCollection[j].topElementHeight =
-              Math.floor(Math.random() * 300) + 100;
-            that3.pipeCollection[j].bottomElementHeight =
-              512 -
-              that3.pipeCollection[j].topElementHeight -
-              that3.pipeCollection[j].gap;
-            that3.pipeCollection[j].bottomElementY =
-              512 - that3.pipeCollection[j].bottomElementHeight;
-
-            that3.pipeCollection[j].topElement.style.left =
-              that3.pipeCollection[j].topElementX + 'px';
-            that3.pipeCollection[j].bottomElement.style.left =
-              that3.pipeCollection[j].bottomElementX + 'px';
-
-            that3.pipeCollection[j].topElement.style.height =
-              that3.pipeCollection[j].topElementHeight + 'px';
-            that3.pipeCollection[j].bottomElement.style.height =
-              that3.pipeCollection[j].bottomElementHeight + 'px';
-            that3.pipeCollection[j].bottomElement.style.top =
-              512 - that3.pipeCollection[j].bottomElementHeight + 'px';
-          } else {
-            that3.pipeCollection[j].topElement.style.left =
-              that3.pipeCollection[j].topElementX + 'px';
-            that3.pipeCollection[j].bottomElement.style.left =
-              that3.pipeCollection[j].bottomElementX + 'px';
-          }
-        }
-        //
-      }
-    }, 20);
-  };
-
-  
-
-//starts the game
-var run = new Run();
-run.init();
-
-//Bird control event handling
-document.addEventListener('keypress', turn);
-
-function jump(e) {
-  if (e.keyCode === 32) {
-    createLayout.menu.style.display = 'none';
-    that3.startGameflag = true;
-
-    that.rotation = -30;
-    that.element.style.transform = 'rotate(' + that.rotation + 'deg)';
-    that.gravity = that.gravity - that.antiGravity;
-    that.element.style.top = that.gravity + 'px';
-    that.velocity = 1;
-  }
+function endGame() {
+  const endGame = setInterval(() => {
+    if (bird.y <= 512 - bird.height) {
+      bird.die();
+    } else {
+      clearInterval(endGame);
+    }
+  }, 1000 / 120);
 }
-//
+
+function startGame() {
+  bird.fall();
+
+  if (pipes.length < 3 && pipeCounter % 100 === 0) {
+    const pipe = new Pipe();
+    pipe.init();
+    pipes.push(pipe);
+  }
+
+  pipeCounter++;
+
+  //   console.log("pipes array length >>>",pipes.length);
+
+  if (pipes.length > 0) {
+    for (let i = 0; i < pipes.length; i++) {
+      pipes[i].move();
+
+      if (
+        collision(
+          bird.y,
+          bird.x,
+          bird.width,
+          bird.height,
+          pipes[i].pipeTopY,
+          pipes[i].x,
+          pipes[i].width,
+          pipes[i].pipeTopHeight
+        )
+      ) {
+        hit.play();
+        die.play();
+        endGame();
+        cancelAnimationFrame(game);
+      }
+
+      if (
+        collision(
+          bird.y,
+          bird.x,
+          bird.width,
+          bird.height,
+          pipes[i].pipeBottomY,
+          pipes[i].x,
+          pipes[i].width,
+          pipes[i].pipeBottomHeight
+        )
+      ) {
+        hit.play();
+        die.play();
+
+        endGame();
+        cancelAnimationFrame(game);
+      }
+
+      if (pipes[i].x + pipes[i].width === bird.x) {
+        point.play();
+        score.increaseScore();
+      }
+    }
+  }
+
+  // collision(bird.y, bird.x, bird.width, bird.height, 0, 0, 100000, 1);
+
+  const game = requestAnimationFrame(startGame);
+}
+
+const game = requestAnimationFrame(startGame);

@@ -1,12 +1,14 @@
 class Bird {
-  constructor() {
+  constructor(flapSound, swooshSound) {
+    this.flapSound = flapSound;
+    this.swooshSound = swooshSound;
     this.bird;
     this.width = 34;
     this.height = 24;
     this.x = 0;
     this.y = 50;
     this.dy = 0;
-    this.gravity = 0.35 ;
+    this.gravity = 0.35;
     this.flap = -6;
     this.angle = 0;
 
@@ -38,34 +40,27 @@ class Bird {
 
     this.bird.style.transform = `rotate(${this.angle}deg)`;
     this.angle += 2;
+
+    if (this.dy > 9) {
+      this.swooshSound.play();
+    }
   };
 
   fly = event => {
     if (event.keyCode === KEY_SPACE) {
+      this.flapSound.play();
       this.dy = this.flap;
       this.angle = -35;
       this.bird.style.transform = `rotate(${this.angle}deg)`;
-      // this.bird.style.transform = 'rotate(0deg)';
-      // document.removeEventListener('keypress', this.fly);
     }
   };
+
+  die = () => {
+    this.y += 4;
+    this.bird.style.transform = `rotate(90deg)`;
+    this.bird.style.top = this.y + 'px';
+  };
 }
-
-const bird = new Bird();
-bird.init();
-
-function startGame() {
-  bird.fall();
-
-  // if (bird.count === 0) {
-  //   bird.count = 60;
-  // } else {
-  //   bird.count -= 1;
-  // }
-  window.requestAnimationFrame(startGame);
-}
-
-window.requestAnimationFrame(startGame);
 
 // document.addEventListener('keypress', event => {
 //   window.requestAnimationFrame(startGame);

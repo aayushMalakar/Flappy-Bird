@@ -4,7 +4,8 @@ class Pipe {
     this.maxHeight = 320;
     this.minHeight = 60;
     this.x = 388;
-    this.y = 0;
+    this.pipeTopY = 0;
+    this.pipeBottomY = 0;
     this.pipesGap = 120;
     this.pipeHorizontalGap = 66;
     this.velocity = 2;
@@ -18,9 +19,10 @@ class Pipe {
     this.pipeTop.style.height = `${this.pipeTopHeight}px`;
     this.pipeTop.style.position = 'absolute';
     this.pipeTop.style.left = this.x + 'px';
-    this.pipeTop.style.top = this.y + 'px';
+    this.pipeTop.style.top = this.pipeTopY + 'px';
     this.pipeTop.style.backgroundImage = "url('../Assets/img/pipe-green.png')";
     this.pipeTop.style.transform = 'rotate(-180deg)';
+    // container.appendChild(this.pipeTop);
     background.landscape.appendChild(this.pipeTop);
 
     this.pipeBottom = document.createElement('div');
@@ -28,9 +30,11 @@ class Pipe {
     this.pipeBottom.style.height = `${this.pipeBottomHeight}px`;
     this.pipeBottom.style.position = 'absolute';
     this.pipeBottom.style.left = this.x + 'px';
-    this.pipeBottom.style.bottom = this.y + 'px';
+    this.pipeBottomY = 512 - this.pipeBottomHeight;
+    this.pipeBottom.style.top = `${this.pipeBottomY}px`;
     this.pipeBottom.style.backgroundImage =
       "url('../Assets/img/pipe-green.png')";
+    // container.appendChild(this.pipeBottom);
     background.landscape.appendChild(this.pipeBottom);
   };
 
@@ -52,36 +56,13 @@ class Pipe {
   };
 
   checkPipesPosition = () => {
-    if (this.x < -200) {
+    if (this.x < -220) {
       this.x = 388;
       this.generatepipesHeight();
       this.pipeTop.style.height = `${this.pipeTopHeight}px`;
       this.pipeBottom.style.height = `${this.pipeBottomHeight}px`;
+      this.pipeBottomY = 512 - this.pipeBottomHeight;
+      this.pipeBottom.style.top = `${this.pipeBottomY}px`;
     }
   };
 }
-
-const pipes = [];
-let pipeCounter = 100;
-
-const startGame = () => {
-  if (pipes.length < 3 && pipeCounter % 100 === 0) {
-    const pipe = new Pipe();
-    pipe.init();
-    pipes.push(pipe);
-  }
-
-  pipeCounter++;
-
-  //   console.log("pipes array length >>>",pipes.length);
-
-  if (pipes.length > 0) {
-    for (let i = 0; i < pipes.length; i++) {
-      pipes[i].move();
-    }
-  }
-
-  window.requestAnimationFrame(startGame);
-};
-
-startGame();
