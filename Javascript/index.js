@@ -126,13 +126,13 @@ class Game {
   endGame = () => {
     this.bird.remove();
     this.score.updateHighScore();
-    this.score.showHighScore();
 
     const gameOver = setInterval(() => {
       if (this.bird.y <= 512 - this.bird.height) {
         this.bird.die();
       } else {
         this.score.displayScoreBoard();
+        this.score.showHighScore();
         clearInterval(gameOver);
       }
     }, 1000 / 120);
