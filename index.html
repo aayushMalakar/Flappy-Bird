@@ -4,26 +4,38 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Flappy bird</title>
-    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" type="text/css" href="css/styles.css" />
   </head>
   <body>
     <div class="container">
-      <div class="game">
-        <!-- <div class="test"></div> -->
+      <div class="game"></div>
+      <div class="menu">
+        <h1>Flappy Bird Clone</h1>
+
+        <h2>
+          Highscore:
+        </h2>
+
+        <ul class="instruction__list">
+          <h2>
+            Instruction
+          </h2>
+          <li class="instruction__item">
+            Press F to pay respect and start or restart the game
+          </li>
+          <li class="instruction__item">press space to jump</li>
+        </ul>
       </div>
-      <!-- <div class="menu">
-        <h1>High Score</h1>
-        <button>Play</button>
-      </div> -->
     </div>
 
     <script src="./Javascript/Constants/constant.js"></script>
-    <script src="./Javascript/utils/collision.js"></script>
     <script src="./Javascript/background.js"></script>
+    <script src="./Javascript/utils/sound.js"></script>
+    <script src="./Javascript/Menu.js"></script>
     <script src="Javascript/pipes.js"></script>
     <script src="./Javascript/player.js"></script>
-    <script src="./Javascript/utils/sound.js"></script>
     <script src="./Javascript/utils/score.js"></script>
+    <script src="./Javascript/utils/collision.js"></script>
     <script src="./Javascript/index.js"></script>
   </body>
 </html>

@@ -1,18 +1,18 @@
 class Bird {
-  constructor(flapSound, swooshSound) {
+  constructor(parent, flapSound, swooshSound) {
+    this.parent = parent;
     this.flapSound = flapSound;
     this.swooshSound = swooshSound;
     this.bird;
     this.width = 34;
     this.height = 24;
-    this.x = 0;
-    this.y = 50;
+    this.x = 30;
+    this.y = this.parent.landscapeHeight / 2 - this.height;
     this.dy = 0;
     this.gravity = 0.35;
     this.flap = -6;
     this.angle = 0;
-
-    this.count = 60;
+    this.maxRotatedAngle = 90;
   }
 
   init = () => {
@@ -22,9 +22,10 @@ class Bird {
     this.bird.style.position = 'absolute';
     this.bird.style.left = this.x + 'px';
     this.bird.style.top = this.y + 'px';
+    this.bird.style.zIndex = '1000';
     this.bird.style.backgroundImage =
       "url('../Assets/img/bluebird-upflap.png')";
-    container.appendChild(this.bird);
+    this.parent.landscape.appendChild(this.bird);
 
     document.addEventListener('keypress', this.fly);
   };
@@ -34,8 +35,8 @@ class Bird {
     this.y += this.dy;
     this.bird.style.top = this.y + 'px';
 
-    if (this.angle >= 90) {
-      this.angle = 90;
+    if (this.angle >= this.maxRotatedAngle) {
+      this.angle = this.maxRotatedAngle;
     }
 
     this.bird.style.transform = `rotate(${this.angle}deg)`;
@@ -59,6 +60,11 @@ class Bird {
     this.y += 4;
     this.bird.style.transform = `rotate(90deg)`;
     this.bird.style.top = this.y + 'px';
+  };
+
+  remove = () => {
+    document.removeEventListener('keypress', this.fly);
+    // this.flapSound.remove();
   };
 }
 

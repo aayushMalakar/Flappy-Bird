@@ -1,92 +1,150 @@
-const flap = new sound('../Assets/audio/wing.wav');
-const hit = new sound('../Assets/audio/hit.wav');
-const die = new sound('../Assets/audio/die.wav');
-const point = new sound('../Assets/audio/point.wav');
-const swoosh = new sound('../Assets/audio/swoosh.wav');
+const flap = new sound('../../Assets/audio/wing.wav');
+const hit = new sound('../../Assets/audio/hit.wav');
+const die = new sound('../../Assets/audio/die.wav');
+const point = new sound('../../Assets/audio/point.wav');
+const swoosh = new sound('../../Assets/audio/swoosh.wav');
 
-const score = new Score();
-score.init();
-
-const bird = new Bird(flap, swoosh);
-bird.init();
-
-const pipes = [];
-let pipeCounter = 100;
-
-function endGame() {
-  const endGame = setInterval(() => {
-    if (bird.y <= 512 - bird.height) {
-      bird.die();
-    } else {
-      clearInterval(endGame);
-    }
-  }, 1000 / 120);
-}
-
-function startGame() {
-  bird.fall();
-
-  if (pipes.length < 3 && pipeCounter % 100 === 0) {
-    const pipe = new Pipe();
-    pipe.init();
-    pipes.push(pipe);
+class Game {
+  constructor() {
+    this.runAnimation;
+    this.background = new Background();
+    this.background.init();
+    this.menu = new Menu(this.background);
+    this.menu.start();
+    this.showMenu = true;
   }
 
-  pipeCounter++;
+  init = () => {
+    this.bird = new Bird(this.background, flap, swoosh);
+    this.bird.init();
+    this.pipes = [];
+    this.pipeCounter = 100;
+    this.score = new Score(this.background);
+    this.score.init();
+    this.score.showScore();
+    if (!this.showMenu) {
+      // this.background.landscape.removeChild(this.menu.startMenu);
+      this.menu.startMenu.remove();
+    }
+  };
 
-  //   console.log("pipes array length >>>",pipes.length);
+  resetGame = () => {
+    while (this.background.landscape.firstChild) {
+      this.background.landscape.removeChild(
+        this.background.landscape.lastChild
+      );
+    }
 
-  if (pipes.length > 0) {
-    for (let i = 0; i < pipes.length; i++) {
-      pipes[i].move();
+    this.init();
+    this.runAnimation = requestAnimationFrame(this.startGame);
+  };
 
-      if (
-        collision(
-          bird.y,
-          bird.x,
-          bird.width,
-          bird.height,
-          pipes[i].pipeTopY,
-          pipes[i].x,
-          pipes[i].width,
-          pipes[i].pipeTopHeight
-        )
-      ) {
-        hit.play();
-        die.play();
-        endGame();
-        cancelAnimationFrame(game);
-      }
+  startGame = () => {
+    this.background.move();
+    this.bird.fall();
 
-      if (
-        collision(
-          bird.y,
-          bird.x,
-          bird.width,
-          bird.height,
-          pipes[i].pipeBottomY,
-          pipes[i].x,
-          pipes[i].width,
-          pipes[i].pipeBottomHeight
-        )
-      ) {
-        hit.play();
-        die.play();
+    if (this.pipes.length < 3 && this.pipeCounter % 100 === 0) {
+      const pipe = new Pipe(this.background);
+      pipe.init();
+      this.pipes.push(pipe);
+    }
 
-        endGame();
-        cancelAnimationFrame(game);
-      }
+    this.pipeCounter++;
 
-      if (pipes[i].x + pipes[i].width === bird.x) {
-        point.play();
-        score.increaseScore();
+    if (
+      collision(
+        this.bird.y,
+        this.bird.x,
+        this.bird.width,
+        this.bird.height,
+        0,
+        0,
+        1000,
+        1
+      ) ||
+      collision(
+        this.bird.y,
+        this.bird.x,
+        this.bird.width,
+        this.bird.height,
+        512,
+        0,
+        1000,
+        1
+      )
+    ) {
+      hit.play();
+      die.play();
+      this.endGame();
+      cancelAnimationFrame(this.runAnimation);
+      return;
+    }
+
+    if (this.pipes.length > 0) {
+      for (let i = 0; i < this.pipes.length; i++) {
+        this.pipes[i].move();
+
+        if (
+          collision(
+            this.bird.y,
+            this.bird.x,
+            this.bird.width,
+            this.bird.height,
+            this.pipes[i].pipeTopY,
+            this.pipes[i].x,
+            this.pipes[i].width,
+            this.pipes[i].pipeTopHeight
+          ) ||
+          collision(
+            this.bird.y,
+            this.bird.x,
+            this.bird.width,
+            this.bird.height,
+            this.pipes[i].pipeBottomY,
+            this.pipes[i].x,
+            this.pipes[i].width,
+            this.pipes[i].pipeBottomHeight
+          )
+        ) {
+          hit.play();
+          die.play();
+          this.endGame();
+          cancelAnimationFrame(this.runAnimation);
+          return;
+        }
+
+        if (this.pipes[i].x + this.pipes[i].width === this.bird.x) {
+          point.play();
+          this.score.increaseScore();
+        }
       }
     }
-  }
 
-  // collision(bird.y, bird.x, bird.width, bird.height, 0, 0, 100000, 1);
+    this.runAnimation = requestAnimationFrame(this.startGame);
+  };
 
-  const game = requestAnimationFrame(startGame);
+  endGame = () => {
+    this.bird.remove();
+    this.score.updateHighScore();
+    this.score.showHighScore();
+
+    const gameOver = setInterval(() => {
+      if (this.bird.y <= 512 - this.bird.height) {
+        this.bird.die();
+      } else {
+        this.score.displayScoreBoard();
+        clearInterval(gameOver);
+      }
+    }, 1000 / 120);
+  };
 }
 
-const game = requestAnimationFrame(startGame);
+const game = new Game();
+game.init();
+
+window.addEventListener('keydown', event => {
+  if (event.keyCode === 70) {
+    game.showMenu = false;
+    game.resetGame();
+  }
+});

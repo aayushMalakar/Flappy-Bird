@@ -15,8 +15,8 @@ container.style.position = 'relative';
 container.style.height = 624 + 'px';
 container.style.width = 288 + 'px';
 container.style.margin = '0px auto';
-// container.style.backgroundColor = 'red';
 container.style.overflow = 'hidden';
+// container.style.backgroundColor = 'red';
 
 /**
  * image array for score
