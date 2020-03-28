@@ -54,7 +54,7 @@ class Score {
   };
 
   increaseScore = () => {
-    this.initialScore += 5;
+    this.initialScore++;
 
     this.showScore();
   };
