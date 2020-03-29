@@ -14,7 +14,9 @@ const container = document.querySelector('.game');
 container.style.position = 'relative';
 container.style.height = 624 + 'px';
 container.style.width = 288 + 'px';
-container.style.margin = '0px auto';
+// container.style.margin = '0px auto';
+container.style.position = 'absolute';
+container.style.left = '20%';
 container.style.overflow = 'hidden';
 // container.style.backgroundColor = 'red';
 

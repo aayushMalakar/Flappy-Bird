@@ -26,6 +26,16 @@ class Game {
       // this.background.landscape.removeChild(this.menu.startMenu);
       this.menu.startMenu.remove();
     }
+
+    window.addEventListener('keydown', this.gameEvent);
+  };
+
+  gameEvent = event => {
+    if (event.keyCode === 70) {
+      this.showMenu = false;
+      this.resetGame();
+      window.removeEventListener('keydown', this.gameEvent);
+    }
   };
 
   resetGame = () => {
@@ -134,6 +144,7 @@ class Game {
         this.score.displayScoreBoard();
         this.score.showHighScore();
         clearInterval(gameOver);
+        window.addEventListener('keydown', this.gameEvent);
       }
     }, 1000 / 120);
   };
@@ -141,10 +152,3 @@ class Game {
 
 const game = new Game();
 game.init();
-
-window.addEventListener('keydown', event => {
-  if (event.keyCode === 70) {
-    game.showMenu = false;
-    game.resetGame();
-  }
-});

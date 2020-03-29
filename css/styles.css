@@ -4,11 +4,19 @@
 }
 
 .menu {
-  background-color: red;
+  /* background-image: url('../Assets/img/background_1.jpg'); */
+  background-size: contain;
+  background-repeat: no-repeat;
+  height: 600px;
   padding: 10px;
   position: absolute;
-  top: 10%;
-  left: 10%;
+  top: 0%;
+  left: 50%;
+  /* color: white; */
+}
+
+.margin {
+  margin-bottom: 10px;
 }
 
 /* .game {
